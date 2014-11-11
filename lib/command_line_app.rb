@@ -1,8 +1,12 @@
 class CommandLineApp
   attr_reader :input, :output
 
-  def puts(message)
+  def puts(message = "")
     output.puts(message)
+  end
+
+  def print(message)
+    output.print(message)
   end
 
   def gets
