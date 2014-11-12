@@ -32,7 +32,7 @@ describe TodoApp do
         app.run
 
         expect(output).to include("'create' to create a new task")
-        expect(output).to include("'edit' to edit a task")
+        expect(output).to include("'rename' to rename a task")
         expect(output).to include("'complete' to complete a task and remove it from the list")
       end
     end
@@ -84,7 +84,7 @@ describe TodoApp do
       end
     end
 
-    describe 'editing a task' do
+    describe 'renaming a task' do
       describe 'when the task is found' do
         before do
           simulate_user_input(
