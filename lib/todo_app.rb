@@ -24,14 +24,19 @@ class TodoApp < CommandLineApp
     $stdout.puts message
   end
 
-  def prompt
-    print "#{@working_project} >"
+  def get_input
+    gets.chomp
   end
 
-  def print_menu menu_name
+  def prompt project = @working_project
+    print "#{project} >"
+  end
+
+
+  def print_menu instructions
     puts
     puts ".::: Menu :::."
-    @instructions[menu_name].each_value do |option|
+    instructions.each_value do |option|
       puts option + "\n"
     end
     prompt
@@ -48,20 +53,15 @@ class TodoApp < CommandLineApp
     while true
       @working_project =  "" if menu_name == :project_menu
 
-      print_menu menu_name
-      user_input = gets.chomp
+      print_menu(@instructions[menu_name])
+      user_input = get_input
 
       break if user_input == "quit"
       break if (user_input == "back" && menu_name != :project_menu)
 
-      if @instructions[menu_name].include?("#{user_input}#{menu_level}".to_sym)
-        public_send("#{user_input}#{menu_level}".to_sym)
-      else
-        puts
-        puts "Alert: Invalid Input!"
-      end
+      method = "#{user_input}#{menu_level}".to_sym
+      public_send(method) if @instructions[menu_name].include?(method)
     end
-
   end
 
   def list_p
@@ -74,46 +74,7 @@ class TodoApp < CommandLineApp
       end
     end
   end
-
-  def create_p
-    puts "Please enter the new project name:\n"; prompt
-    name = gets.chomp
-    @project_list[name] = Project.new(name)
-  end
-
-  def rename_p
-    puts "Please enter the project name to rename:\n"; prompt
-    @working_project = gets.chomp
-    if (@project_list.map {|project_id, object| object.name}).include?(@working_project)
-      puts "Please enter the new project name:\n"; prompt
-      new_name = gets.chomp
-      @project_list[@working_project].rename(new_name)
-    end
-  end
-
-  def delete_p
-    puts "Please enter the project name to delete:\n"; prompt
-    @working_project = gets.chomp
-    if @project_list.include?(@working_project)
-      @project_list.delete(@working_project)
-    end
-  end
-
-  def edit_p
-    puts "Please enter the project name to edit:\n"; prompt
-    @working_project = gets.chomp
-    if @project_list.include?(@working_project)
-      puts "Editing Project: #{@working_project}"
-      menu :task_menu
-    end
-  end
-
-  def create_t
-  puts "Please enter the new task name:\n"; prompt
-  task_name = gets.chomp
-    @project_list[@working_project].add_task(task_name)
-  end
-
+  
   def list_t
     if @project_list[@working_project].tasks.empty?
       puts "  none"
@@ -126,15 +87,51 @@ class TodoApp < CommandLineApp
     end
   end
 
+  def create_p
+    puts "Please enter the new project name:\n"; prompt
+    name = get_input
+    @project_list[name] = Project.new(name)
+  end
+
+  def rename_p
+    puts "Please enter the project name to rename:\n"; prompt
+    @working_project = get_input
+    if (@project_list.map {|project_id, object| object.name}).include?(@working_project)
+      puts "Please enter the new project name:\n"; prompt
+      @project_list[@working_project].rename(get_input)
+    end
+  end
+
+  def delete_p
+    puts "Please enter the project name to delete:\n"; prompt
+    @working_project = get_input
+    if @project_list.include?(@working_project)
+      @project_list.delete(@working_project)
+    end
+  end
+
+  def edit_p
+    puts "Please enter the project name to edit:\n"; prompt
+    @working_project = get_input
+    if @project_list.include?(@working_project)
+      puts "Editing Project: #{@working_project}"
+      menu :task_menu
+    end
+  end
+
+  def create_t
+  puts "Please enter the new task name:\n"; prompt
+    @project_list[@working_project].add_task(get_input)
+  end
+
   def edit_t
     puts "Please enter the task name to rename:\n"; prompt
-    @working_task = gets.chomp
+    @working_task = get_input
     tasks = @project_list[@working_project].tasks
 
     if tasks.map {|task_id, object| object.name}.include?(@working_task)
       puts "Please enter the new task name:\n"; prompt
-      new_name = gets.chomp
-      tasks[@working_task].rename(new_name)
+      tasks[@working_task].rename(get_input)
     else
       puts "task not found: '#{@working_task}'"
     end
@@ -142,7 +139,7 @@ class TodoApp < CommandLineApp
 
   def complete_t
     puts "Please enter the task name to complete:\n"; prompt
-    @working_task = gets.chomp
+    @working_task = get_input
     tasks = @project_list[@working_project].tasks
     if tasks.map {|task_id, object| object.name}.include?(@working_task)
       tasks[@working_task].set_complete
