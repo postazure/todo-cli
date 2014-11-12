@@ -2,6 +2,7 @@ class TodoApp < CommandLineApp
   def initialize(input, output)
     @input = input
     @output = output
+    @project_list = {}
     @instructions = {
       project_menu: {
         list_p:  "'list' to list projects",
@@ -17,8 +18,6 @@ class TodoApp < CommandLineApp
         complete_t: "'complete' to complete a task and remove it from the list"
       }
     }
-    @project_list = {}
-    @working_task = ""
   end
 
   def real_puts message = ""
@@ -43,11 +42,11 @@ class TodoApp < CommandLineApp
   end
 
   def menu menu_name = :project_menu #:project_menu is main menu
-    key = {project_menu: "_p", task_menu: "_t"}[menu_name]
+    menu_level = {project_menu: "_p", task_menu: "_t"}[menu_name]
 
     while true
-      @working_task = "" if key == "_t"
-      @working_project = "" if key == "_p"
+      @working_task = "" if menu_level == "_t"
+      @working_project = "" if menu_level == "_p"
 
       print_menu menu_name
       user_input = gets.chomp
@@ -55,8 +54,8 @@ class TodoApp < CommandLineApp
       break if (user_input == "back" && menu_name != :project_menu)
 
       @working_project =  "" if menu_name == :project_menu
-      if @instructions[menu_name].include?("#{user_input}#{key}".to_sym)
-        public_send("#{user_input}#{key}".to_sym)
+      if @instructions[menu_name].include?("#{user_input}#{menu_level}".to_sym)
+        public_send("#{user_input}#{menu_level}".to_sym)
       else
         puts "Invalid Input!!!"
       end
@@ -77,7 +76,6 @@ class TodoApp < CommandLineApp
 
   def create_p
     puts "Please enter the new project name:\n"; prompt
-
     name = gets.chomp
     @project_list[name] = Project.new(name)
   end
@@ -88,7 +86,6 @@ class TodoApp < CommandLineApp
     if (@project_list.map {|project_id, object| object.name}).include?(@working_project)
       puts "Please enter the new project name:\n"; prompt
       new_name = gets.chomp
-
       @project_list[@working_project].rename(new_name)
     end
   end
@@ -136,7 +133,6 @@ class TodoApp < CommandLineApp
     if tasks.map {|task_id, object| object.name}.include?(@working_task)
       puts "Please enter the new task name:\n"; prompt
       new_name = gets.chomp
-
       tasks[@working_task].rename(new_name)
     else
       puts "task not found: '#{@working_task}'"
