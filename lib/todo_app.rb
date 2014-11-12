@@ -45,19 +45,16 @@ class TodoApp < CommandLineApp
     menu_level = {project_menu: "_p", task_menu: "_t"}[menu_name]
 
     while true
-      @working_task = "" if menu_level == "_t"
-      @working_project = "" if menu_level == "_p"
+      @working_project =  "" if menu_name == :project_menu
 
       print_menu menu_name
       user_input = gets.chomp
+
       break if user_input == "quit"
       break if (user_input == "back" && menu_name != :project_menu)
 
-      @working_project =  "" if menu_name == :project_menu
       if @instructions[menu_name].include?("#{user_input}#{menu_level}".to_sym)
         public_send("#{user_input}#{menu_level}".to_sym)
-      else
-        puts "Invalid Input!!!"
       end
     end
 
