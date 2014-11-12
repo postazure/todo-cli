@@ -26,9 +26,7 @@ class TodoApp < CommandLineApp
   end
 
   def prompt
-    print "#{@working_project}"
-    print "/#{@working_task}" unless @working_task.empty? #user feedback
-    print " >"
+    print "#{@working_project} >"
   end
 
   def print_menu menu_name

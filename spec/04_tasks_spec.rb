@@ -96,8 +96,8 @@ describe TodoApp do
 
         it "should update the task in the list" do
           app.run
-          expect(output).to include("  iron clothes")
-          expect(output).not_to include("  iron shirts")
+          expect(output).to include("iron clothes")
+          expect(output).not_to include("iron shirts")
         end
       end
 
