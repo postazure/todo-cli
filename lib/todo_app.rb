@@ -30,7 +30,7 @@ class TodoApp < CommandLineApp
 
   def print_menu menu_name
     puts
-    @instructions[menu_name].each do |action, option|
+    @instructions[menu_name].each_value do |option|
       puts option + "\n"
     end
     prompt
@@ -68,7 +68,7 @@ class TodoApp < CommandLineApp
       puts "Projects:\n  none"
     else
       print "Projects:"
-      @project_list.each do |project_id, object|
+      @project_list.each_value do |object|
         print "\n  #{object.name}"
       end
     end
@@ -118,7 +118,7 @@ class TodoApp < CommandLineApp
       puts "  none"
     else
       print "Tasks:"
-      @project_list[@working_project].tasks.each do |task_id, object|
+      @project_list[@working_project].tasks.each_value do |object|
         print "\n  #{object.name}"
         print ": completed" if object.complete
       end
