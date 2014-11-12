@@ -30,6 +30,7 @@ class TodoApp < CommandLineApp
 
   def print_menu menu_name
     puts
+    puts ".::: Menu :::."
     @instructions[menu_name].each_value do |option|
       puts option + "\n"
     end
@@ -55,6 +56,9 @@ class TodoApp < CommandLineApp
 
       if @instructions[menu_name].include?("#{user_input}#{menu_level}".to_sym)
         public_send("#{user_input}#{menu_level}".to_sym)
+      else
+        puts
+        puts "Alert: Invalid Input!"
       end
     end
 
