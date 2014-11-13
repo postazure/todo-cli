@@ -5,12 +5,16 @@ class CommandLineApp
     output.puts(message)
   end
 
-  def gets
-    input.gets
+  # def gets
+  #   input.gets
+  # end
+
+  def get_input
+    input.gets.chomp
   end
 
-  def initialize(input, output)
-    @input = input
-    @output = output
+  def real_puts message = ""
+    $stdout.puts message
   end
+
 end

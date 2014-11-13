@@ -4,6 +4,7 @@ class View
   def initialize(output)
     @output = output
   end
+  
   def puts(message)
     output.puts(message)
   end

@@ -8,7 +8,6 @@ class ViewTask < View
     puts "'complete' to complete a task and remove it from the list"
   end
 
-
   def print_tasks_list(tasks)
     puts "Tasks:"
     if tasks.empty?
