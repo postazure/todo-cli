@@ -19,16 +19,17 @@ class TodoApp < CommandLineApp
       ]
     }
     @actions = {
-      "list_p" => lambda{list(menu_level,@project_list)},
-      "list_t" => lambda{list(menu_level,@project_list[@working_project].tasks)},
-      "create_p" => lambda{create(menu_level, @project_list)},
-      "create_t" => lambda{create(menu_level, @project_list[@working_project])},
-      "rename_p" => lambda{rename(menu_level,@project_list)},
-      "edit_t" => lambda{rename(menu_level,@project_list[@working_project].tasks)},
+      "list_p" => lambda{list(@menu_level,@project_list)},
+      "list_t" => lambda{list(@menu_level,@project_list[@working_project].tasks)},
+      "create_p" => lambda{create(@menu_level, @project_list)},
+      "create_t" => lambda{create(@menu_level, @project_list[@working_project])},
+      "rename_p" => lambda{rename(@menu_level,@project_list)},
+      "edit_t" => lambda{rename(@menu_level,@project_list[@working_project].tasks)},
       "delete_p" => lambda{delete_p},
       "edit_p" => lambda{edit_p},
       "complete_t" => lambda{complete_t}
     }
+    @menu_level = "_p"
   end
 
   def real_puts message = ""
@@ -42,7 +43,6 @@ class TodoApp < CommandLineApp
   def prompt project = @working_project
     print "#{project} >"
   end
-
 
   def print_menu instructions
     puts
@@ -59,7 +59,7 @@ class TodoApp < CommandLineApp
   end
 
   def menu menu_name = :project_menu #:project_menu is main menu
-    menu_level = {project_menu: "_p", task_menu: "_t"}[menu_name]
+    @menu_level = {project_menu: "_p", task_menu: "_t"}[menu_name]
 
     while true
       @working_project =  "" if menu_name == :project_menu
@@ -70,7 +70,7 @@ class TodoApp < CommandLineApp
       break if user_input == "quit"
       break if (user_input == "back" && menu_name != :project_menu)
 
-      method = "#{user_input}#{menu_level}"
+      method = "#{user_input}#{@menu_level}"
 
       @actions[method].call if @actions.include?(method)
     end
