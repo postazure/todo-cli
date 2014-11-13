@@ -18,6 +18,17 @@ class TodoApp < CommandLineApp
         "'complete' to complete a task and remove it from the list"
       ]
     }
+    @actions = {
+      "list_p" => lambda{list(menu_level,@project_list)},
+      "list_t" => lambda{list(menu_level,@project_list[@working_project].tasks)},
+      "create_p" => lambda{create(menu_level, @project_list)},
+      "create_t" => lambda{create(menu_level, @project_list[@working_project])},
+      "rename_p" => lambda{rename(menu_level,@project_list)},
+      "edit_t" => lambda{rename(menu_level,@project_list[@working_project].tasks)},
+      "delete_p" => lambda{delete_p},
+      "edit_p" => lambda{edit_p},
+      "complete_t" => lambda{complete_t}
+    }
   end
 
   def real_puts message = ""
@@ -60,18 +71,8 @@ class TodoApp < CommandLineApp
       break if (user_input == "back" && menu_name != :project_menu)
 
       method = "#{user_input}#{menu_level}"
-      actions = {
-        "list_p" => lambda{list(menu_level,@project_list)},
-        "list_t" => lambda{list(menu_level,@project_list[@working_project].tasks)},
-        "create_p" => lambda{create(menu_level, @project_list)},
-        "create_t" => lambda{create(menu_level, @project_list[@working_project])},
-        "rename_p" => lambda{rename(menu_level,@project_list)},
-        "edit_t" => lambda{rename(menu_level,@project_list[@working_project].tasks)},
-        "delete_p" => lambda{delete_p},
-        "edit_p" => lambda{edit_p},
-        "complete_t" => lambda{complete_t}
-      }
-      actions[method].call if actions.include?(method)
+
+      @actions[method].call if @actions.include?(method)
     end
   end
 
