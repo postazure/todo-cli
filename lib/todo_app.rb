@@ -4,19 +4,19 @@ class TodoApp < CommandLineApp
     @output = output
     @project_list = {}
     @instructions = {
-      project_menu: {
-        list_p:  "'list' to list projects",
-        create_p: "'create' to create a new project",
-        rename_p: "'rename' to rename a project",
-        delete_p: "'delete' to delete a project",
-        edit_p: "'edit' to edit a project"
-      },
-      task_menu: {
-        list_t: "'list' to list tasks",
-        create_t: "'create' to create a new task",
-        edit_t: "'edit' to edit a task",
-        complete_t: "'complete' to complete a task and remove it from the list"
-      }
+      project_menu: [
+        "'list' to list projects",
+        "'create' to create a new project",
+        "'rename' to rename a project",
+        "'delete' to delete a project",
+        "'edit' to edit a project"
+      ],
+      task_menu: [
+        "'list' to list tasks",
+        "'create' to create a new task",
+        "'edit' to edit a task",
+        "'complete' to complete a task and remove it from the list"
+      ]
     }
   end
 
@@ -36,7 +36,7 @@ class TodoApp < CommandLineApp
   def print_menu instructions
     puts
     puts ".::: Menu :::."
-    instructions.each_value do |option|
+    instructions.each do |option|
       puts option + "\n"
     end
     prompt
