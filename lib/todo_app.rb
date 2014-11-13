@@ -59,47 +59,55 @@ class TodoApp < CommandLineApp
       break if user_input == "quit"
       break if (user_input == "back" && menu_name != :project_menu)
 
-      method = "#{user_input}#{menu_level}".to_sym
-      public_send(method) if @instructions[menu_name].include?(method)
+      method = "#{user_input}#{menu_level}"
+      actions = {
+        "list_p" => lambda{list(menu_level,@project_list)},
+        "list_t" => lambda{list(menu_level,@project_list[@working_project].tasks)},
+        "create_p" => lambda{create(menu_level, @project_list)},
+        "create_t" => lambda{create(menu_level, @project_list[@working_project])},
+        "rename_p" => lambda{rename(menu_level,@project_list)},
+        "edit_t" => lambda{rename(menu_level,@project_list[@working_project].tasks)},
+        "delete_p" => lambda{delete_p},
+        "edit_p" => lambda{edit_p},
+        "complete_t" => lambda{complete_t}
+      }
+      actions[method].call if actions.include?(method)
     end
   end
 
-  def list_p
-    if @project_list.empty?
-      puts "Projects:\n  none"
+  def list level, data
+    print "#{{"_p" => "Projects:", "_t" => "Tasks:"}[level]}"
+    if data.empty?
+      puts "\n  none"
     else
-      print "Projects:"
-      @project_list.each_value do |object|
+      data.each_value do |object|
         print "\n  #{object.name}"
-      end
-    end
-  end
-  
-  def list_t
-    if @project_list[@working_project].tasks.empty?
-      puts "  none"
-    else
-      print "Tasks:"
-      @project_list[@working_project].tasks.each_value do |object|
-        print "\n  #{object.name}"
-        print ": completed" if object.complete
+        print"#{': completed' if object.complete}" if level == "_t"
       end
     end
   end
 
-  def create_p
-    puts "Please enter the new project name:\n"; prompt
+  def create level, data
+    level_out = {"_p" => "project", "_t" => "task"}[level]
+    puts "Please enter the new #{level_out} name:\n"; prompt
     name = get_input
-    @project_list[name] = Project.new(name)
+
+    data.add_task(name) if level == "_t"
+    data[name] = Project.new(name) if level == "_p"
   end
 
-  def rename_p
-    puts "Please enter the project name to rename:\n"; prompt
-    @working_project = get_input
-    if (@project_list.map {|project_id, object| object.name}).include?(@working_project)
-      puts "Please enter the new project name:\n"; prompt
-      @project_list[@working_project].rename(get_input)
+  def rename level, data
+    level_out = {"_p" => "project", "_t" => "task"}[level]
+    puts "Please enter the #{level_out} name to rename:\n"; prompt
+    old_name = get_input
+    if (data.map {|project_id, object| object.name}).include?(old_name)
+      @working_project = old_name if level == "_p"
+      puts "Please enter the new #{level_out} name:\n"; prompt
+      data[old_name].rename(get_input)
+    else
+      puts "#{level_out} not found: '#{old_name}'"
     end
+
   end
 
   def delete_p
@@ -116,24 +124,6 @@ class TodoApp < CommandLineApp
     if @project_list.include?(@working_project)
       puts "Editing Project: #{@working_project}"
       menu :task_menu
-    end
-  end
-
-  def create_t
-  puts "Please enter the new task name:\n"; prompt
-    @project_list[@working_project].add_task(get_input)
-  end
-
-  def edit_t
-    puts "Please enter the task name to rename:\n"; prompt
-    @working_task = get_input
-    tasks = @project_list[@working_project].tasks
-
-    if tasks.map {|task_id, object| object.name}.include?(@working_task)
-      puts "Please enter the new task name:\n"; prompt
-      tasks[@working_task].rename(get_input)
-    else
-      puts "task not found: '#{@working_task}'"
     end
   end
 
